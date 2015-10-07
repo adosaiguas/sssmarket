@@ -1,13 +1,21 @@
 package com.jpmorgan.example.assignments.sssmarket;
 
+import java.util.Date;
+import java.util.SortedMap;
+import java.util.TreeMap;
+
+import com.jpmorgan.example.assignments.sssmarket.enums.StockType;
+import com.jpmorgan.example.assignments.sssmarket.enums.TradeType;
+
 public class Stock {
 	
 	private String symbol;
-	private String type;
+	private StockType type;
 	private Double lastDividend;
 	private Double fixedDividend;
 	private Double parValue;
-
+    private TreeMap<Date, Trade> trades;
+    
 	public String getSymbol() {
 		return symbol;
 	}
@@ -16,11 +24,11 @@ public class Stock {
 		this.symbol = symbol;
 	}
 
-	public String getType() {
+	public StockType getType() {
 		return type;
 	}
 
-	public void setType(String type) {
+	public void setType(StockType type) {
 		this.type = type;
 	}
 
@@ -48,12 +56,13 @@ public class Stock {
 		this.parValue = parValue;
 	}
 
-	public Stock(String symbol, String type, Double lastDividend, Double fixedDividend, Double parValue) {
+	public Stock(String symbol, StockType type, Double lastDividend, Double fixedDividend, Double parValue) {
 		this.setSymbol(symbol);
 		this.setType(type);
 		this.setLastDividend(lastDividend);
 		this.setFixedDividend(fixedDividend);
 		this.setParValue(parValue);
+		this.trades = new TreeMap<Date, Trade>();
 	}
 
 	@Override
@@ -63,14 +72,14 @@ public class Stock {
 				+ ", parValue=" + parValue + "]";
 	}
 
-	public Double dividend(Double price) throws Exception {
+	public Double dividend(Double price) {
 		switch(this.getType()) {
-			case "Common":
+			case COMMON:
 				return this.getLastDividend()/price;
-			case "Preferred":
+			case PREFERRED:
 				return this.getFixedDividend()*this.getParValue()/price;
 			default:
-				throw new Exception("Unsupported stock type");
+				return 0.0;
 		}
 	}
 	
@@ -78,4 +87,39 @@ public class Stock {
 		return price/this.getLastDividend();
 	}
 
+	public void buy(Integer quantity, Double price) {
+		Trade trade = new Trade(TradeType.BUY, quantity, price);
+		this.trades.put(new Date(), trade);
+	}
+
+	public void sell(Integer quantity, Double price) {
+		Trade trade = new Trade(TradeType.SELL, quantity, price);
+		this.trades.put(new Date(), trade);		
+	}
+	
+	public Double getPrice() {
+		if (this.trades.size() > 0) {
+			// Uses the last trade price as price
+			return this.trades.lastEntry().getValue().getPrice();
+		} else {
+			// No trades = price 0? :)
+			return 0.0;
+		}
+	}
+	
+	public Double calculateVolumeWeigthedStockPrice() {
+		Date now = new Date();
+		// Date 15 minutes ago
+		Date startTime = new Date(now.getTime() - (15 * 60 * 1000));
+		// Get trades for the last 15 minutes
+		SortedMap<Date, Trade> trades = this.trades.tailMap(startTime);
+		// Calculate
+		Double volumeWeightedStockPrice = 0.0;
+		Integer totalQuantity = 0;
+		for (Trade trade: trades.values()) {
+			totalQuantity += trade.getQuantity();
+			volumeWeightedStockPrice += trade.getPrice() * trade.getQuantity();
+		}
+		return volumeWeightedStockPrice/totalQuantity;
+	}
 }
