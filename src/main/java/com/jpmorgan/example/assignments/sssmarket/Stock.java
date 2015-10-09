@@ -56,6 +56,14 @@ public class Stock {
 		this.parValue = parValue;
 	}
 
+	public TreeMap<Date, Trade> getTrades() {
+		return trades;
+	}
+
+	public void setTrades(TreeMap<Date, Trade> trades) {
+		this.trades = trades;
+	}
+
 	public Stock(String symbol, StockType type, Double lastDividend, Double fixedDividend, Double parValue) {
 		this.setSymbol(symbol);
 		this.setType(type);
