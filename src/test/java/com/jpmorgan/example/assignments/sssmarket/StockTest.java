@@ -56,18 +56,18 @@ public class StockTest {
 	}
 
 	@Test
-	public void testCalculateVolumeWeigthedStockPrice() {
+	public void testCalculateVolumeWeightedStockPrice() {
 		Stock stockALE = new Stock("ALE", StockType.COMMON, 23.0, 0.0, 60.0);
 		stockALE.sell(2, 10.0);
 		stockALE.buy(2, 10.0);		
-		Double volumeWeigthedStockPrice = stockALE.calculateVolumeWeigthedStockPrice();
-		assertEquals(10.0, volumeWeigthedStockPrice, 0.0);
+		Double volumeWeightedStockPrice = stockALE.calculateVolumeWeightedStockPrice();
+		assertEquals(10.0, volumeWeightedStockPrice, 0.0);
 		Date now = new Date();
 		// Date 20 minutes ago
 		Date startTime = new Date(now.getTime() - (20 * 60 * 1000));
 		stockALE.getTrades().put(startTime, new Trade(TradeType.BUY, 1, 20.0));
 		// The new (outdated) trade should not affect calculation of the Volume Weighted Stock Price
-		volumeWeigthedStockPrice = stockALE.calculateVolumeWeigthedStockPrice();
-		assertEquals(10.0, volumeWeigthedStockPrice, 0.0);
+		volumeWeightedStockPrice = stockALE.calculateVolumeWeightedStockPrice();
+		assertEquals(10.0, volumeWeightedStockPrice, 0.0);
 	}
 }

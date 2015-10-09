@@ -54,7 +54,7 @@ public class App
             		Thread.sleep(1000);
             	}
             	log.debug( stock.getSymbol() + " price: $" + stock.getPrice());
-            	log.debug( stock.getSymbol() + " volumeWeightedStockPrice: $" + stock.calculateVolumeWeigthedStockPrice());
+            	log.debug( stock.getSymbol() + " volumeWeightedStockPrice: $" + stock.calculateVolumeWeightedStockPrice());
             }
             Double GBCEallShareIndex = GBCE.allShareIndex(db);
             log.debug( "GBCE All Share Index: " + GBCEallShareIndex);
